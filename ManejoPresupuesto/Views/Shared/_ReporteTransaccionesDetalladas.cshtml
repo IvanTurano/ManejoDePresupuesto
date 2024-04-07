@@ -1,0 +1,55 @@
+﻿@model ReporteTransaccionesDetalladas
+
+@{
+    var resumenMontos = new ResumenMontosViewModel()
+    {
+          Ingresos = Model.BalanceDepositos,
+          Gastos = Model.BalanceRetiros,
+          Total = Model.Total
+    };
+}
+
+
+<partial name="_NavegarPorMeses" model="@Model.FechaInicio" /> 
+
+<partial name="_ResumenMontos" model="@resumenMontos" />
+
+@if (Model.TransaccionesAgrupadas.Count() == 0)
+{
+    <div>
+        <h5>No hay datos para mostrar</h5>
+    </div>
+}
+else
+{
+    <table class="table">
+        <tbody>
+            @foreach (var transaccionesAgrupada in Model.TransaccionesAgrupadas)
+            {
+                <tr style="background-color: cornflowerblue; font-size: 22px">
+                    <td colspan="3">
+                        @transaccionesAgrupada.FechaTransaccion.Day
+                        <span class="badge bg-secondary">@transaccionesAgrupada.FechaTransaccion.ToString("ddd")</span>
+                    </td>
+                    <td class="activo">@transaccionesAgrupada.BalanceDepositos.ToString("N")</td>
+                    <td class="pasivo">@transaccionesAgrupada.BalanceRetiros.ToString("N")</td>
+                </tr>
+                @foreach (var transaccion in transaccionesAgrupada.Transacciones)
+                {
+                    <tr>
+                        <td>
+                            <a asp-controller="transacciones" asp-action="Editar" asp-route-id="@transaccion.Id"
+                               asp-route-urlRetorno="@ViewBag.urlRetorno">
+                                <i class="bi-pencil"></i>
+                            </a>
+                        </td>
+                        <td>@transaccion.Categoria</td>
+                        <td>@transaccion.Cuenta</td>
+                        <td class="activo">@(transaccion.TipoOperacionId == TipoOperacion.Ingreso ? transaccion.Monto.ToString("N") : null)</td>
+                        <td class="pasivo">@(transaccion.TipoOperacionId == TipoOperacion.Gasto ? transaccion.Monto.ToString("N") : null)</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
