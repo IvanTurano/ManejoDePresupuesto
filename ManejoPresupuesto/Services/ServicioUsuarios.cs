@@ -26,7 +26,7 @@ namespace ManejoPresupuesto.Services
             {
                 throw new ApplicationException("El usuario no está autenticado");
             }
-            return 1;
+            
         }
     }
 }
